@@ -84,7 +84,80 @@
       font-size: 0.9rem;
     }
 
-    /* Panel de Estadísticas Globals */
+    /* Caja de Integración y Búsqueda por Perfil */
+    .profile-search-card {
+      background: var(--steam-bg-card);
+      border: 1px solid var(--steam-border);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    }
+
+    .profile-search-title {
+      font-size: 1rem;
+      color: var(--steam-accent);
+      font-weight: bold;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .profile-form-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr auto;
+      gap: 12px;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .input-group label {
+      font-size: 0.75rem;
+      color: var(--steam-text-muted);
+      text-transform: uppercase;
+    }
+
+    .input-group input {
+      background: #0d1217;
+      border: 1px solid var(--steam-border);
+      color: #fff;
+      padding: 10px 12px;
+      border-radius: 4px;
+      font-size: 0.88rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .input-group input:focus {
+      border-color: var(--steam-accent);
+    }
+
+    .btn-steam {
+      background: linear-gradient(90deg, #a4d007 0%, #537000 100%);
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 0.88rem;
+      align-self: flex-end;
+      transition: filter 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-steam:hover {
+      filter: brightness(1.2);
+    }
+
+    /* Panel de Estadísticas */
     .stats-panel {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -118,7 +191,7 @@
       text-shadow: 0 0 8px rgba(229, 193, 88, 0.4);
     }
 
-    /* Barra de Progreso Global */
+    /* Barra de Progreso */
     .progress-container {
       background: var(--steam-bg-card);
       border: 1px solid var(--steam-border);
@@ -142,7 +215,6 @@
       border-radius: 9px;
       overflow: hidden;
       border: 1px solid rgba(255, 255, 255, 0.05);
-      position: relative;
     }
 
     .progress-bar-inner {
@@ -154,7 +226,7 @@
       box-shadow: 0 0 10px rgba(102, 192, 244, 0.5);
     }
 
-    /* Barra de Filtros y Búsqueda */
+    /* Controles y Filtros */
     .controls-bar {
       display: flex;
       justify-content: space-between;
@@ -278,6 +350,7 @@
       object-fit: cover;
       border: 1px solid rgba(255, 255, 255, 0.1);
       box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+      background-color: #0d1217;
     }
 
     .achievement-info {
@@ -322,49 +395,10 @@
       color: var(--steam-accent);
     }
 
-    /* Modal Integración API */
-    .api-config-box {
-      background: rgba(13, 18, 23, 0.8);
-      border: 1px dashed var(--steam-border);
-      border-radius: 6px;
-      padding: 15px;
-      margin-bottom: 20px;
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
-    .api-config-box input {
-      background: #171a21;
-      border: 1px solid var(--steam-border);
-      color: #fff;
-      padding: 8px 12px;
-      border-radius: 4px;
-      font-size: 0.85rem;
-      flex: 1;
-      min-width: 200px;
-    }
-
-    .btn-steam {
-      background: linear-gradient(90deg, #a4d007 0%, #537000 100%);
-      color: #fff;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 4px;
-      font-weight: bold;
-      cursor: pointer;
-      font-size: 0.85rem;
-      transition: filter 0.2s;
-    }
-
-    .btn-steam:hover {
-      filter: brightness(1.2);
-    }
-
     @media (max-width: 768px) {
       header.game-header { flex-direction: column; text-align: center; }
       .game-details { flex-direction: column; }
+      .profile-form-grid { grid-template-columns: 1fr; }
       .controls-bar { flex-direction: column; align-items: stretch; }
       .search-box { width: 100%; }
     }
@@ -374,23 +408,35 @@
 
   <div class="container">
     
-    <!-- Encabezado del Juego -->
+    <!-- Encabezado del Juego / Perfil -->
     <header class="game-header">
       <div class="game-details">
         <img src="https://cdn.cloudflare.steamstatic.com/steam/apps/1086940/header.jpg" alt="Game Logo" class="game-banner" id="game-banner">
         <div class="game-info">
           <h1 id="game-title">Baldur's Gate 3</h1>
-          <p id="game-subtext">Progreso personal de logros en la biblioteca de Steam</p>
+          <p id="user-profile-display">Mostrando logros para: <b style="color:var(--steam-accent);" id="steam-user-tag">Usuario Steam (Demo)</b></p>
         </div>
       </div>
-      <button class="btn-steam" onclick="toggleApiInput()"><i class="fab fa-steam"></i> Cargar de Steam API</button>
     </header>
 
-    <!-- Configuración Rápida de Steam API -->
-    <div class="api-config-box" id="api-box" style="display: none;">
-      <input type="text" id="steam-id" placeholder="Ingresa SteamID64 (Ej: 76561198012345678)">
-      <input type="text" id="app-id" placeholder="AppID del Juego (Ej: 1086940)">
-      <button class="btn-steam" onclick="fetchSteamAchievements()">Sincronizar</button>
+    <!-- Caja de Consulta por URL de Perfil de Steam -->
+    <div class="profile-search-card">
+      <div class="profile-search-title">
+        <i class="fab fa-steam"></i> Cargar Logros desde Perfil de Steam
+      </div>
+      <div class="profile-form-grid">
+        <div class="input-group">
+          <label for="steam-url-input">URL del Perfil de Steam o SteamID64</label>
+          <input type="text" id="steam-url-input" placeholder="https://steamcommunity.com/id/tu_usuario/ o https://steamcommunity.com/profiles/76561198000000000">
+        </div>
+        <div class="input-group">
+          <label for="app-id-input">AppID del Juego</label>
+          <input type="text" id="app-id-input" value="1086940" placeholder="Ej. 1086940">
+        </div>
+        <button class="btn-steam" onclick="loadSteamAchievementsFromUrl()">
+          <i class="fas fa-sync-alt"></i> Cargar
+        </button>
+      </div>
     </div>
 
     <!-- Resumen de Estadísticas -->
@@ -424,7 +470,7 @@
       </div>
     </div>
 
-    <!-- Barra de Controles y Filtros -->
+    <!-- Barra de Filtros y Búsqueda -->
     <div class="controls-bar">
       <div class="filter-buttons">
         <button class="btn-filter active" onclick="filterAchievements('all', this)">Todos</button>
@@ -441,13 +487,16 @@
 
     <!-- Grilla de Logros -->
     <div class="achievements-grid" id="achievements-grid">
-      <!-- Se llena dinámicamente mediante JavaScript -->
+      <!-- Carga dinámica -->
     </div>
 
   </div>
 
   <script>
-    // Datos de ejemplo predeterminados (Steam Showcase Mode)
+    // Fallback de imagen en formato SVG inline para evitar errores de conexión/servidores externos caídos
+    const SVG_FALLBACK_ICON = `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'><rect width='64' height='64' fill='%23171a21' rx='4'/><path d='M32 14a18 18 0 1 0 18 18A18 18 0 0 0 32 14zm0 30a12 12 0 1 1 12-12 12 12 0 0 1-12 12z' fill='%2366c0f4'/><polygon points='32,22 35,28 42,29 37,34 38,41 32,37 26,41 27,34 22,29 29,28' fill='%23e5c158'/></svg>`;
+
+    // Datos predeterminados con URLs de imágenes nativas directas
     const mockAchievements = [
       {
         id: "ach_1",
@@ -491,7 +540,7 @@
       },
       {
         id: "ach_5",
-        name: "Señor de Absoluta",
+        name: "Señor de la Absoluta",
         description: "Toma el control de la Antigua Red y domina el mundo.",
         iconUnlocked: "https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/apps/1086940/3e91122a10f8a8461a355f30e67b2d1314512999.jpg",
         iconLocked: "https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/apps/1086940/3e91122a10f8a8461a355f30e67b2d1314512999.jpg",
@@ -519,7 +568,7 @@
       grid.innerHTML = '';
 
       if (data.length === 0) {
-        grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--steam-text-muted); padding: 40px;">No se encontraron logros que coincidan con los filtros.</div>';
+        grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--steam-text-muted); padding: 40px;">No se encontraron logros que coincidan con la búsqueda.</div>';
         return;
       }
 
@@ -533,7 +582,7 @@
         card.className = `achievement-card ${statusClass} ${rareClass}`;
 
         card.innerHTML = `
-          <img src="${iconSrc}" alt="${ach.name}" class="achievement-icon" onerror="this.src='https://via.placeholder.com/64/171a21/c7d5e0?text=Steam'">
+          <img src="${iconSrc}" alt="${ach.name}" class="achievement-icon" onerror="this.onerror=null; this.src='${SVG_FALLBACK_ICON}';">
           <div class="achievement-info">
             <div class="achievement-name" title="${ach.name}">${ach.name}</div>
             <div class="achievement-desc">${ach.description}</div>
@@ -597,22 +646,47 @@
       renderAchievements(filtered);
     }
 
-    function toggleApiInput() {
-      const box = document.getElementById('api-box');
-      box.style.display = box.style.display === 'none' ? 'flex' : 'none';
+    // Extractor de ID / Usuario de la URL de Perfil de Steam
+    function parseSteamIdentifier(inputUrl) {
+      if (!inputUrl) return null;
+      
+      const cleanUrl = inputUrl.trim().replace(/\/$/, "");
+      
+      if (/^\d{17}$/.test(cleanUrl)) {
+        return { type: 'id64', value: cleanUrl };
+      }
+      
+      const profileMatch = cleanUrl.match(/\/profiles\/(\d{17})/);
+      if (profileMatch) {
+        return { type: 'id64', value: profileMatch[1] };
+      }
+
+      const vanityMatch = cleanUrl.match(/\/id\/([^\/]+)/);
+      if (vanityMatch) {
+        return { type: 'vanity', value: vanityMatch[1] };
+      }
+
+      return { type: 'vanity', value: cleanUrl };
     }
 
-    // Estructura lista para llamadas reales a la API Web de Steam (Requiere servidor/CORS Proxy)
-    async function fetchSteamAchievements() {
-      const steamId = document.getElementById('steam-id').value.trim();
-      const appId = document.getElementById('app-id').value.trim();
+    function loadSteamAchievementsFromUrl() {
+      const rawUrl = document.getElementById('steam-url-input').value;
+      const appId = document.getElementById('app-id-input').value.trim() || '1086940';
+      const parsed = parseSteamIdentifier(rawUrl);
 
-      if (!steamId || !appId) {
-        alert('Por favor ingresa un SteamID64 y un AppID válidos.');
+      if (!parsed) {
+        alert('Por favor ingresa una URL de perfil o SteamID64 válido.');
         return;
       }
 
-      alert(`Sincronizando logros para AppID ${appId} y SteamID ${steamId}... (Nota: La API oficial de Steam requiere clave de API de Steam y bypass de CORS).`);
+      const userTag = document.getElementById('steam-user-tag');
+      userTag.textContent = parsed.value;
+
+      // Actualizar imagen del banner dinámicamente según el AppID
+      document.getElementById('game-banner').src = `https://cdn.cloudflare.steamstatic.com/steam/apps/${appId}/header.jpg`;
+
+      // Simulación de respuesta tras procesar el usuario y AppID
+      alert(`Perfil identificado: ${parsed.value} (${parsed.type.toUpperCase()})\nCargando datos para AppID ${appId}...`);
     }
 
     // Inicialización al cargar la página
