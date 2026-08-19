@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Steam Showcase - Muro de Todos los Logros del Perfil</title>
+  <title>Steam Showcase - Muro Global de Logros</title>
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -42,78 +42,24 @@
       padding: 25px;
       margin-bottom: 25px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
     }
 
     .game-info h1 { font-size: 1.8rem; color: #ffffff; margin-bottom: 6px; }
     .game-info p { color: var(--steam-text-muted); font-size: 0.9rem; }
 
-    .profile-search-card {
-      background: var(--steam-bg-card);
-      border: 1px solid var(--steam-border);
-      border-radius: 8px;
-      padding: 20px;
-      margin-bottom: 25px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-    }
-
-    .profile-search-title {
-      font-size: 1rem;
+    .last-update-tag {
+      font-size: 0.75rem;
       color: var(--steam-accent);
-      font-weight: bold;
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .profile-form-grid {
-      display: grid;
-      grid-template-columns: 2fr 2fr auto;
-      gap: 12px;
-    }
-
-    .input-group { display: flex; flex-direction: column; gap: 5px; }
-    .input-group label { font-size: 0.72rem; color: var(--steam-text-muted); text-transform: uppercase; }
-
-    .input-group input {
-      background: #0d1217;
-      border: 1px solid var(--steam-border);
-      color: #fff;
-      padding: 10px 12px;
+      background: rgba(102, 192, 244, 0.1);
+      padding: 6px 12px;
       border-radius: 4px;
-      font-size: 0.88rem;
-      outline: none;
+      border: 1px solid var(--steam-accent);
     }
-
-    .input-group input:focus { border-color: var(--steam-accent); }
-
-    .btn-steam {
-      background: linear-gradient(90deg, #a4d007 0%, #537000 100%);
-      color: #fff;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 4px;
-      font-weight: bold;
-      cursor: pointer;
-      font-size: 0.88rem;
-      align-self: flex-end;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .btn-steam:hover { filter: brightness(1.2); }
-
-    .status-banner {
-      padding: 12px;
-      border-radius: 6px;
-      margin-bottom: 20px;
-      font-size: 0.88rem;
-      display: none;
-    }
-
-    .status-banner.error { background: rgba(231, 76, 60, 0.2); border: 1px solid var(--steam-error); color: var(--steam-error); }
-    .status-banner.info { background: rgba(102, 192, 244, 0.2); border: 1px solid var(--steam-accent); color: var(--steam-accent); }
 
     .stats-panel {
       display: grid;
@@ -132,7 +78,6 @@
 
     .stat-value { font-size: 1.6rem; font-weight: bold; color: var(--steam-accent); margin-top: 4px; }
     .stat-card.rare .stat-value { color: var(--steam-rare-purple); }
-    .stat-card.perfect .stat-value { color: var(--steam-gold); }
 
     .controls-bar {
       display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 20px;
@@ -184,10 +129,6 @@
     .achievement-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; font-size: 0.72rem; }
     .unlock-date { color: var(--steam-success-bright); }
     .global-percentage { color: var(--steam-accent); font-weight: bold; }
-
-    @media (max-width: 768px) {
-      .profile-form-grid { grid-template-columns: 1fr; }
-    }
   </style>
 </head>
 <body>
@@ -196,31 +137,11 @@
     
     <header class="game-header">
       <div class="game-info">
-        <h1 id="header-title">Muro Global de Logros de Steam</h1>
-        <p id="user-profile-display">Consulta todos los juegos de una cuenta ordenados del <b style="color:var(--steam-accent);">logro más raro al menos raro</b>.</p>
+        <h1>Muro Global de Logros de Steam</h1>
+        <p>Logros de la biblioteca ordenados del <b style="color:var(--steam-accent);">más raro al menos raro</b>.</p>
       </div>
+      <div class="last-update-tag" id="last-update">Cargando fecha de actualización...</div>
     </header>
-
-    <div class="profile-search-card">
-      <div class="profile-search-title">
-        <i class="fab fa-steam"></i> Consultar Perfil Completo
-      </div>
-      <div class="profile-form-grid">
-        <div class="input-group">
-          <label for="steam-url-input">URL de Perfil / SteamID64</label>
-          <input type="text" id="steam-url-input" placeholder="Ej. https://steamcommunity.com/profiles/76561198000000000">
-        </div>
-        <div class="input-group">
-          <label for="api-key-input">Steam Web API Key</label>
-          <input type="password" id="api-key-input" placeholder="Obtener en steamcommunity.com/dev/apikey">
-        </div>
-        <button class="btn-steam" onclick="fetchAllUserAchievements()">
-          <i class="fas fa-search"></i> Escanear Biblioteca
-        </button>
-      </div>
-    </div>
-
-    <div id="status-banner" class="status-banner"></div>
 
     <div class="stats-panel">
       <div class="stat-card">
@@ -257,141 +178,43 @@
 
     <div class="achievements-grid" id="achievements-grid">
       <div style="grid-column: 1/-1; text-align: center; color: var(--steam-text-muted); padding: 40px;">
-        Ingresa el perfil y tu API Key de Steam para analizar la biblioteca completa.
+        Cargando achievements.json desde el servidor...
       </div>
     </div>
 
   </div>
 
   <script>
-    const CORS_PROXY = "https://corsproxy.io/?";
-
     function handleImageError(img) {
       img.onerror = null;
       img.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'><rect width='64' height='64' fill='%23171a21' rx='4'/><path d='M32 14a18 18 0 1 0 18 18A18 18 0 0 0 32 14zm0 30a12 12 0 1 1 12-12 12 12 0 0 1-12 12z' fill='%2366c0f4'/><polygon points='32,22 35,28 42,29 37,34 38,41 32,37 26,41 27,34 22,29 29,28' fill='%23e5c158'/></svg>";
     }
 
-    let allMasterAchievements = [];
+    let masterAchievements = [];
     let activeFilter = 'all';
 
-    function showStatus(msg, isError = false) {
-      const banner = document.getElementById('status-banner');
-      banner.style.display = 'block';
-      banner.className = `status-banner ${isError ? 'error' : 'info'}`;
-      banner.textContent = msg;
-    }
-
-    function hideStatus() {
-      document.getElementById('status-banner').style.display = 'none';
-    }
-
-    function parseSteamId(input) {
-      if (!input) return null;
-      const clean = input.trim().replace(/\/$/, "");
-      if (/^\d{17}$/.test(clean)) return clean;
-      const match = clean.match(/\/profiles\/(\d{17})/);
-      return match ? match[1] : clean;
-    }
-
-    async function fetchAllUserAchievements() {
-      const rawUser = document.getElementById('steam-url-input').value;
-      const apiKey = document.getElementById('api-key-input').value.trim();
-
-      const steamId = parseSteamId(rawUser);
-
-      if (!steamId || !apiKey) {
-        showStatus('Ingresa un SteamID64/Perfil y tu Steam API Key.', true);
-        return;
-      }
-
-      showStatus('Consultando biblioteca de juegos del perfil...');
-
+    async function loadAchievementsJson() {
+      const grid = document.getElementById('achievements-grid');
       try {
-        // 1. Obtener lista de juegos del usuario
-        const gamesUrl = `${CORS_PROXY}${encodeURIComponent(`https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=${apiKey}&steamid=${steamId}&format=json&include_appinfo=true`)}`;
-        const gamesRes = await fetch(gamesUrl);
-        if (!gamesRes.ok) throw new Error('Error al consultar juegos del usuario. Revisa el SteamID y la API Key.');
+        const response = await fetch(`./achievements.json?nocache=${Date.now()}`);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+        const data = await response.json();
+        masterAchievements = data.achievements || [];
+
+        document.getElementById('stat-games').textContent = data.scanned_games_count || 0;
         
-        const gamesData = await gamesRes.json();
-        const ownedGames = gamesData.response?.games || [];
-
-        // Filtrar juegos jugados
-        const playedGames = ownedGames.filter(g => g.playtime_forever > 0);
-
-        if (playedGames.length === 0) {
-          throw new Error('No se encontraron juegos jugados en la cuenta o el perfil es privado.');
+        if (data.updated_at) {
+          const formattedDate = new Date(data.updated_at).toLocaleString('es-ES', { dateStyle: 'medium', timeStyle: 'short' });
+          document.getElementById('last-update').textContent = `Actualizado: ${formattedDate}`;
         }
 
-        allMasterAchievements = [];
-        let processedGamesCount = 0;
-
-        // 2. Iterar sobre cada juego para obtener sus logros y rarezas
-        for (let i = 0; i < playedGames.length; i++) {
-          const game = playedGames[i];
-          showStatus(`Escaneando juego ${i + 1} de ${playedGames.length}: ${game.name}...`);
-
-          try {
-            // Logros del jugador para este AppID
-            const playerAchsUrl = `${CORS_PROXY}${encodeURIComponent(`https://api.steampowered.com/ISteamUserStats/GetPlayerAchievements/v0001/?appid=${game.appid}&key=${apiKey}&steamid=${steamId}&l=spanish`)}`;
-            const pRes = await fetch(playerAchsUrl);
-            if (!pRes.ok) continue;
-
-            const pData = await pRes.json();
-            const playerAchs = pData.playerstats?.achievements;
-            if (!playerAchs || playerAchs.length === 0) continue;
-
-            // Porcentajes de rareza
-            const rarityUrl = `${CORS_PROXY}${encodeURIComponent(`https://api.steampowered.com/ISteamUserStats/GetGlobalAchievementPercentagesForApp/v0002/?gameid=${game.appid}`)}`;
-            const rRes = await fetch(rarityUrl);
-            const rData = rRes.ok ? await rRes.json() : {};
-            const globalPercentages = {};
-            (rData.achievementpercentages?.achievements || []).forEach(item => {
-              globalPercentages[item.name] = parseFloat(item.percent).toFixed(1);
-            });
-
-            // Esquema con nombres e iconos
-            const schemaUrl = `${CORS_PROXY}${encodeURIComponent(`https://api.steampowered.com/ISteamUserStats/GetSchemaForGame/v2/?key=${apiKey}&appid=${game.appid}&l=spanish`)}`;
-            const sRes = await fetch(schemaUrl);
-            const sData = sRes.ok ? await sRes.json() : {};
-            const schemaMap = {};
-            (sData.game?.availableGameStats?.achievements || []).forEach(a => {
-              schemaMap[a.name] = a;
-            });
-
-            // Mapear logros
-            playerAchs.forEach(pAch => {
-              const details = schemaMap[pAch.apiname] || {};
-              const pct = globalPercentages[pAch.apiname] !== undefined ? parseFloat(globalPercentages[pAch.apiname]) : 100.0;
-              const unlockDate = pAch.unlocktime > 0 ? new Date(pAch.unlocktime * 1000).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' }) : null;
-
-              allMasterAchievements.push({
-                id: `${game.appid}_${pAch.apiname}`,
-                gameName: game.name,
-                name: details.displayName || pAch.apiname,
-                description: details.description || 'Sin descripción.',
-                iconUnlocked: details.icon || '',
-                iconLocked: details.icongray || details.icon || '',
-                unlocked: pAch.achieved === 1,
-                unlockTime: unlockDate,
-                globalPercent: pct
-              });
-            });
-
-            processedGamesCount++;
-          } catch (e) {
-            // Ignorar juegos sin soporte de logros o errores de solicitud individuales
-          }
-        }
-
-        // 3. Ordenar TODOS los logros recopilados por rareza (menor a mayor %)
-        allMasterAchievements.sort((a, b) => a.globalPercent - b.globalPercent);
-
-        document.getElementById('stat-games').textContent = processedGamesCount;
-        hideStatus();
         applyFiltersAndSearch();
-
       } catch (err) {
-        showStatus(`Error: ${err.message}`, true);
+        grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--steam-error); padding: 40px;">
+          ⚠️ No se pudo cargar achievements.json.<br>
+          <span style="font-size:0.8rem; color:var(--steam-text-muted);">Ejecuta el workflow de GitHub Actions para generar la base de datos inicial.</span>
+        </div>`;
       }
     }
 
@@ -400,7 +223,7 @@
       grid.innerHTML = '';
 
       if (data.length === 0) {
-        grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--steam-text-muted); padding: 40px;">No se encontraron logros que coincidan con los filtros.</div>';
+        grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--steam-text-muted); padding: 40px;">No se encontraron logros.</div>';
         return;
       }
 
@@ -434,9 +257,9 @@
     }
 
     function updateStats() {
-      const total = allMasterAchievements.length;
-      const unlocked = allMasterAchievements.filter(a => a.unlocked).length;
-      const rare = allMasterAchievements.filter(a => a.globalPercent < 10.0 && a.unlocked).length;
+      const total = masterAchievements.length;
+      const unlocked = masterAchievements.filter(a => a.unlocked).length;
+      const rare = masterAchievements.filter(a => a.globalPercent < 10.0 && a.unlocked).length;
 
       document.getElementById('stat-total').textContent = total;
       document.getElementById('stat-unlocked').textContent = unlocked;
@@ -455,7 +278,7 @@
     function applyFiltersAndSearch() {
       const query = document.getElementById('search-input').value.toLowerCase().trim();
 
-      const filtered = allMasterAchievements.filter(ach => {
+      const filtered = masterAchievements.filter(ach => {
         const matchesFilter = 
           activeFilter === 'all' ||
           (activeFilter === 'unlocked' && ach.unlocked) ||
@@ -472,6 +295,8 @@
 
       renderAchievements(filtered);
     }
+
+    document.addEventListener('DOMContentLoaded', loadAchievementsJson);
   </script>
 </body>
 </html>
