@@ -275,7 +275,7 @@
 
   <script>
     // 🔑 CONFIGURACIÓN: Ingresa tu Steam Web API Key aquí para que el sitio funcione globalmente
-    const STEAM_API_KEY = "PEGA_AQUI_TU_STEAM_API_KEY"; 
+    const STEAM_API_KEY = "1B6251745150EA2C175C58EADEC4DD23"; 
     const CORS_PROXY = "https://corsproxy.io/?";
 
     function handleImageError(img) {
@@ -309,7 +309,7 @@
       const vanityMatch = clean.match(/\/id\/([^\/]+)/);
       const vanityName = vanityMatch ? vanityMatch[1] : clean;
 
-      if (STEAM_API_KEY && STEAM_API_KEY !== "PEGA_AQUI_TU_STEAM_API_KEY") {
+      if (STEAM_API_KEY && STEAM_API_KEY !== "1B6251745150EA2C175C58EADEC4DD23") {
         try {
           const res = await fetch(`${CORS_PROXY}${encodeURIComponent(`https://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/?key=${STEAM_API_KEY}&vanityurl=${vanityName}`)}`);
           const data = await res.json();
@@ -332,7 +332,7 @@
         return;
       }
 
-      if (!STEAM_API_KEY || STEAM_API_KEY === "PEGA_AQUI_TU_STEAM_API_KEY") {
+      if (!STEAM_API_KEY || STEAM_API_KEY === "1B6251745150EA2C175C58EADEC4DD23") {
         showStatus('Debes colocar tu Steam API Key dentro de la variable "STEAM_API_KEY" en el código JavaScript del archivo.', true);
         return;
       }
