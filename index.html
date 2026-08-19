@@ -411,7 +411,7 @@
     <!-- Encabezado del Juego / Perfil -->
     <header class="game-header">
       <div class="game-details">
-        <img src="https://cdn.cloudflare.steamstatic.com/steam/apps/1086940/header.jpg" alt="Game Logo" class="game-banner" id="game-banner">
+        <img src="https://cdn.cloudflare.steamstatic.com/steam/apps/1086940/header.jpg" alt="Game Logo" class="game-banner" id="game-banner" onerror="handleImageError(this)">
         <div class="game-info">
           <h1 id="game-title">Baldur's Gate 3</h1>
           <p id="user-profile-display">Mostrando logros para: <b style="color:var(--steam-accent);" id="steam-user-tag">Usuario Steam (Demo)</b></p>
@@ -493,10 +493,13 @@
   </div>
 
   <script>
-    // Fallback de imagen en formato SVG inline para evitar errores de conexión/servidores externos caídos
-    const SVG_FALLBACK_ICON = `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'><rect width='64' height='64' fill='%23171a21' rx='4'/><path d='M32 14a18 18 0 1 0 18 18A18 18 0 0 0 32 14zm0 30a12 12 0 1 1 12-12 12 12 0 0 1-12 12z' fill='%2366c0f4'/><polygon points='32,22 35,28 42,29 37,34 38,41 32,37 26,41 27,34 22,29 29,28' fill='%23e5c158'/></svg>`;
+    // Manejador seguro en JS para reemplazar imágenes caídas con un SVG nativo
+    function handleImageError(img) {
+      img.onerror = null;
+      img.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'><rect width='64' height='64' fill='%23171a21' rx='4'/><path d='M32 14a18 18 0 1 0 18 18A18 18 0 0 0 32 14zm0 30a12 12 0 1 1 12-12 12 12 0 0 1-12 12z' fill='%2366c0f4'/><polygon points='32,22 35,28 42,29 37,34 38,41 32,37 26,41 27,34 22,29 29,28' fill='%23e5c158'/></svg>";
+    }
 
-    // Datos predeterminados con URLs de imágenes nativas directas
+    // Datos predeterminados de la demostración
     const mockAchievements = [
       {
         id: "ach_1",
@@ -582,7 +585,7 @@
         card.className = `achievement-card ${statusClass} ${rareClass}`;
 
         card.innerHTML = `
-          <img src="${iconSrc}" alt="${ach.name}" class="achievement-icon" onerror="this.onerror=null; this.src='${SVG_FALLBACK_ICON}';">
+          <img src="${iconSrc}" alt="${ach.name}" class="achievement-icon" onerror="handleImageError(this)">
           <div class="achievement-info">
             <div class="achievement-name" title="${ach.name}">${ach.name}</div>
             <div class="achievement-desc">${ach.description}</div>
@@ -646,7 +649,7 @@
       renderAchievements(filtered);
     }
 
-    // Extractor de ID / Usuario de la URL de Perfil de Steam
+    // Extraer identificador de Steam desde una URL de Perfil
     function parseSteamIdentifier(inputUrl) {
       if (!inputUrl) return null;
       
@@ -682,14 +685,11 @@
       const userTag = document.getElementById('steam-user-tag');
       userTag.textContent = parsed.value;
 
-      // Actualizar imagen del banner dinámicamente según el AppID
       document.getElementById('game-banner').src = `https://cdn.cloudflare.steamstatic.com/steam/apps/${appId}/header.jpg`;
 
-      // Simulación de respuesta tras procesar el usuario y AppID
-      alert(`Perfil identificado: ${parsed.value} (${parsed.type.toUpperCase()})\nCargando datos para AppID ${appId}...`);
+      alert(`Perfil procesado: ${parsed.value} (${parsed.type.toUpperCase()})\nSincronizando logros para AppID ${appId}...`);
     }
 
-    // Inicialización al cargar la página
     document.addEventListener('DOMContentLoaded', () => {
       renderAchievements(currentAchievements);
     });
