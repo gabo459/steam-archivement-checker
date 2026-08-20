@@ -29,45 +29,54 @@ async function main() {
     const allMasterAchievements = [];
     let scannedGamesCount = 0;
 
-    // 2. Recorrer los juegos jugados para extraer logros
-    for (const game of playedGames) {
+    // 2. Recorrer juegos e ir extrayendo logros
+      for (let i = 0; i < playedGames.length; i++) {
+      const game = playedGames[i];
+      showStatus(`Escaneando logros (${i + 1}/${playedGames.length}): ${game.name}...`);
+    
       try {
-        // Logros del jugador
-        const playerAchsUrl = `https://api.steampowered.com/ISteamUserStats/GetPlayerAchievements/v0001/?appid=${game.appid}&key=${STEAM_API_KEY}&steamid=${STEAM_ID}&l=spanish`;
-        const pData = await fetchJson(playerAchsUrl);
+        // Primero consultamos el esquema del juego para verificar si TIENE logros
+        const schemaUrl = `${CORS_PROXY}${encodeURIComponent(`https://api.steampowered.com/ISteamUserStats/GetSchemaForGame/v2/?key=${STEAM_API_KEY}&appid=${game.appid}&l=spanish`)}`;
+        const sRes = await fetch(schemaUrl);
+        if (!sRes.ok) continue;
+    
+        const sData = await sRes.json();
+        const availableAchs = sData.game?.availableGameStats?.achievements;
+    
+        // Si el esquema no tiene logros definidos, saltamos el juego inmediatamente
+        if (!availableAchs || availableAchs.length === 0) continue;
+    
+        const schemaMap = {};
+        availableAchs.forEach(a => { schemaMap[a.name] = a; });
+    
+        // Ahora que sabemos que el juego tiene logros, solicitamos los del usuario
+        const playerAchsUrl = `${CORS_PROXY}${encodeURIComponent(`https://api.steampowered.com/ISteamUserStats/GetPlayerAchievements/v0001/?appid=${game.appid}&key=${STEAM_API_KEY}&steamid=${steamId}&l=spanish`)}`;
+        const pRes = await fetch(playerAchsUrl);
+        if (!pRes.ok) continue;
+    
+        const pData = await pRes.json();
         const playerAchs = pData.playerstats?.achievements;
-
         if (!playerAchs || playerAchs.length === 0) continue;
-
-        // Porcentajes de rareza global
-        const rarityUrl = `https://api.steampowered.com/ISteamUserStats/GetGlobalAchievementPercentagesForApp/v0002/?gameid=${game.appid}`;
-        const rData = await fetchJson(rarityUrl).catch(() => ({}));
+    
+        // Obtener porcentajes globales de rareza
+        const rarityUrl = `${CORS_PROXY}${encodeURIComponent(`https://api.steampowered.com/ISteamUserStats/GetGlobalAchievementPercentagesForApp/v0002/?gameid=${game.appid}`)}`;
+        const rRes = await fetch(rarityUrl);
+        const rData = rRes.ok ? await rRes.json() : {};
         const globalPercentages = {};
         (rData.achievementpercentages?.achievements || []).forEach(item => {
           globalPercentages[item.name] = parseFloat(item.percent).toFixed(1);
         });
-
-        // Esquema para títulos e iconos
-        const schemaUrl = `https://api.steampowered.com/ISteamUserStats/GetSchemaForGame/v2/?key=${STEAM_API_KEY}&appid=${game.appid}&l=spanish`;
-        const sData = await fetchJson(schemaUrl).catch(() => ({}));
-        const schemaMap = {};
-        (sData.game?.availableGameStats?.achievements || []).forEach(a => {
-          schemaMap[a.name] = a;
-        });
-
+    
         playerAchs.forEach(pAch => {
           const details = schemaMap[pAch.apiname] || {};
           const pct = globalPercentages[pAch.apiname] !== undefined ? parseFloat(globalPercentages[pAch.apiname]) : 100.0;
-          const unlockDate = pAch.unlocktime > 0 
-            ? new Date(pAch.unlocktime * 1000).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' }) 
-            : null;
-
+          const unlockDate = pAch.unlocktime > 0 ? new Date(pAch.unlocktime * 1000).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' }) : null;
+    
           allMasterAchievements.push({
             id: `${game.appid}_${pAch.apiname}`,
-            gameAppId: game.appid,
             gameName: game.name,
             name: details.displayName || pAch.apiname,
-            description: details.description || 'Sin descripción disponible.',
+            description: details.description || 'Sin descripción.',
             iconUnlocked: details.icon || '',
             iconLocked: details.icongray || details.icon || '',
             unlocked: pAch.achieved === 1,
@@ -75,11 +84,10 @@ async function main() {
             globalPercent: pct
           });
         });
-
-        scannedGamesCount++;
-        console.log(`✅ [${scannedGamesCount}/${playedGames.length}] Procesado: ${game.name}`);
-      } catch (err) {
-        // Ignorar juegos sin soporte de logros o perfiles privados por juego
+    
+        processedGamesCount++;
+      } catch (e) {
+        // Ignorar errores puntuales de conexión
       }
     }
 
